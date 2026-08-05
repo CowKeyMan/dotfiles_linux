@@ -1,0 +1,46 @@
+[tools]
+# aws-cli = { version = "latest", symlink_bins = "true" }
+# buf = "latest"
+# databricks-cli = "latest"
+# gcloud = "latest"
+# go = "latest"
+# gradle = "latest"
+# grpcurl = "latest"
+# terraform = "latest"
+# terraform-ls = "latest"
+# zig = "latest"
+# k9s = "latest"
+# tflint = "latest"
+cmake = "latest"
+dotnet = "latest"
+fd = "latest"
+fzf = "latest"
+git-lfs = "latest"
+java = "25.0.0"
+neovim = "latest"
+node = "latest"
+opencode = "latest"
+python = "latest"
+ruff = "latest"
+task = "latest"
+tmux = "latest"
+usage = "latest"
+uv = "latest"
+yamlfmt = "latest"
+ty = "latest"
+omnisharp = "latest"
+github-cli = "latest"
+ninja = "latest"
+slang = "latest"
+ripgrep = "latest"
+ollama = "latest"
+
+[tool_alias]
+omnisharp = "github:OmniSharp/omnisharp-roslyn"
+slang = "github:shader-slang/slang"
+
+[settings]
+minimum_release_age = "7d"
+
+[settings.python]
+uv_venv_auto = "source"

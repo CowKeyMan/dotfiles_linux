@@ -1,0 +1,138 @@
+version: '3'
+
+vars:
+  CURRENT_DIR:
+    sh: pwdx $(ps -aux | grep "task" | grep "{{.TASK}}" | head -1 | awk '{print $2}') | awk '{print $2}'
+
+
+tasks:
+  install-clang:
+    summary: Install clang given version, and uninstall old versions
+    cmds:
+      - wget https://apt.llvm.org/llvm.sh
+      - chmod +x llvm.sh
+      - sudo ./llvm.sh ${CLANG_VERSION} all
+      - rm llvm.sh
+      - sudo rm -f /usr/bin/clang /usr/bin/clang++ /usr/bin/clang-tidy /usr/bin/clang-format
+      - sudo ln -f -s /usr/bin/clang-${CLANG_VERSION} /usr/bin/clang
+      - sudo ln -f -s /usr/bin/clangd-${CLANG_VERSION} /usr/bin/clangd
+      - sudo ln -f -s /usr/bin/clang++-${CLANG_VERSION} /usr/bin/clang++
+      - sudo ln -f -s /usr/bin/clang-tidy-${CLANG_VERSION} /usr/bin/clang-tidy
+      - sudo ln -f -s /usr/bin/clang-format-${CLANG_VERSION} /usr/bin/clang-format
+      - sudo ln -f -s /usr/bin/llvm-ranlib-${CLANG_VERSION} /usr/bin/llvm-ranlib
+      - sudo ln -f -s /usr/bin/llvm-ar-${CLANG_VERSION} /usr/bin/llvm-ar
+    env:
+      CLANG_VERSION: 22
+
+  install-pip-requirements:
+    summary: Install pip requirements, usually for language servers and formatters, etc.
+    cmds:
+      - uv venv
+      - uv pip install -r ruff ty cmake-language-server cmakelang pynvim
+
+  install-vim-lsps:
+    summary: Install the nvim lsps that are annoying to install by more savoury means
+    cmds:
+      - nvim
+    env:
+      NEW_PC: 1
+
+  ollama-first-time:
+    summary: Start ollama process the first time
+    cmds:
+      - sudo mkdir -p /opt/ollama/models
+      - sudo chown -R ${USER} /opt/ollama
+
+      # Download models
+      # ollama pull goekdenizguelmez/JOSIEFIED-Qwen3:8b
+      # ollama run goekdenizguelmez/JOSIEFIED-Qwen3:8b
+      # /set parameter num_ctx 16384
+      # /save goekdenizguelmez/JOSIEFIED-Qwen3:8b-16k
+      # ollama run rnj-1:8b
+      # /set parameter num_ctx 32768
+      # /save rnj-1:8b-32k
+      #
+
+  ollama:
+    summary: Start ollama process
+    cmds:
+      - ollama
+    env:
+      OLLAMA_HOST: 127.0.0.1:11434
+      OLLAMA_KEEP_ALIVE: 1h
+      OLLAMA_MAX_LOADED_MODELS: 1
+      OLLAMA_MODELS: /opt/ollama/models
+      OLLAMA_NUM_PARALLEL: 1
+      OLLAMA_NO_CLOUD: 1
+      OLLAMA_FLASH_ATTENTION: 1
+
+  docker-bash:
+    summary: Exec into the ollama container
+    cmds:
+      - docker exec -it {{.NAME}} /bin/bash
+    vars:
+      NAME: '{{.NAME | default "ollama"}}'
+
+  docker-sh:
+    summary: Exec into the ollama container
+    cmds:
+      - docker exec -it {{.NAME}} /bin/bash
+    vars:
+      NAME: '{{.NAME | default "ollama"}}'
+
+  compile-latex:
+    cmds:
+      - pdflatex -synctex=1 -interaction=nonstopmode "main".tex
+      - bibtex "main"
+      - pdflatex -synctex=1 -interaction=nonstopmode "main".tex
+      - pdflatex -synctex=1 -interaction=nonstopmode "main".tex
+
+  image-gen-first-time:
+    cmds:
+      - sudo mkdir -p /opt/image_gen/foocus
+      - sudo chown ${USER} /opt/image_gen
+      - sudo chown ${USER} /opt/image_gen/foocus
+      - |
+        docker run -p 7865:7865 -v /opt/image_gen/foocus:/content/data -it \
+        --gpus all \
+        -e CMDARGS=--listen \
+        -e DATADIR=/content/data \
+        -e config_path=/content/data/config.txt \
+        -e config_example_path=/content/data/config_modification_tutorial.txt \
+        -e path_checkpoints=/content/data/models/checkpoints/ \
+        -e path_loras=/content/data/models/loras/ \
+        -e path_embeddings=/content/data/models/embeddings/ \
+        -e path_vae_approx=/content/data/models/vae_approx/ \
+        -e path_upscale_models=/content/data/models/upscale_models/ \
+        -e path_inpaint=/content/data/models/inpaint/ \
+        -e path_controlnet=/content/data/models/controlnet/ \
+        -e path_clip_vision=/content/data/models/clip_vision/ \
+        -e path_fooocus_expansion=/content/data/models/prompt_expansion/fooocus_expansion/ \
+        -e path_outputs=/content/app/outputs/ \
+        --name image_gen \
+        ghcr.io/lllyasviel/fooocus
+
+  image-gen:
+    cmds:
+      - docker start image_gen
+
+  text-gen-first-time:
+    cmds:
+      - sudo mkdir -p /opt/open_webui
+      - sudo chown ${USER} /opt/open_webui
+      - docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v /opt/open_webui:/app/backend/data --name text_gen ghcr.io/open-webui/open-webui:main
+      - echo "Now open http://localhost:3000/"
+
+  text-gen:
+    cmds:
+      - docker start text_gen
+      - echo "Now open http://localhost:3000/"
+
+  opencode:
+    cmds:
+      - docker run -it --rm --net=host -w /work -v {{.CURRENT_DIR}}:/work -v ${HOME}/.config/opencode:/root/.config/opencode ghcr.io/anomalyco/opencode:latest
+
+  csharp:
+    cmds:
+      - mise use -g dotnet
+      - dotnet tool install --global csharp-ls

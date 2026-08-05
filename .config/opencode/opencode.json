@@ -1,0 +1,78 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "qwen2.5-coder:7b": {
+          "name": "qwen2.5-coder:7b"
+        },
+        "qwen2.5-coder:7b-32k": {
+          "name": "qwen2.5-coder:7b-32k"
+        },
+        "goekdenizguelmez/JOSIEFIED-Qwen3:8b-8k": {
+          "name": "JOSIEFIED-Qwen3:8b-8k"
+        },
+        "carstenuhlig/omnicoder-9b": {
+          "name": "carstenuhlig/omnicoder-9b"
+        },
+        "goekdenizguelmez/JOSIEFIED-Qwen3:8b-16k": {
+          "name": "JOSIEFIED-Qwen3:8b-16k-7_6GB"
+        },
+        "goekdenizguelmez/JOSIEFIED-Qwen3:8b-32k": {
+          "name": "JOSIEFIED-Qwen3:8b-32k"
+        },
+        "qwen3.5:9b-16k": {
+          "name": "qwen3.5:9b-16k"
+        },
+        "qwen3.5:4b-32k": {
+          "name": "qwen3.5:4b-32k-7GB"
+        },
+        "qwen3.5:4b-128k": {
+          "name": "qwen3.5:4b-128k-11GB"
+        },
+        "qwen3.5:4b-256k": {
+          "name": "qwen3.5:4b-256k-18GB"
+        },
+        "qwen3.5-abliterated:4b-32k-7GB": {
+          "name": "qwen3.5-abliterated:4b-32k-7GB"
+        }
+      }
+    }
+  },
+  "model": "goekdenizguelmez/qwen3.5:4b-32k",
+  "permission": {
+    "edit": "ask",
+    "write": "ask",
+    "bash": {
+      "*": "ask",
+      "ls *": "allow",
+      "grep *": "allow",
+      "find *": "allow",
+      "cat *": "allow",
+      "task --list *": "allow",
+      "head *": "allow",
+      "sort *": "allow",
+      "rg *": "allow",
+      "tail *": "allow",
+      "git ls-tree *": "allow",
+      "git show *": "allow",
+      "git fetch *": "allow",
+      "git status *": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "xargs grep *": "allow",
+      "uv sync *": "allow",
+      "wc *": "allow",
+      "sed *": "allow",
+      "cut *": "allow",
+      "echo *": "allow",
+      "print *": "allow"
+    }
+  },
+  "share": "disabled"
+}
