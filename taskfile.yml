@@ -37,22 +37,6 @@ tasks:
     env:
       NEW_PC: 1
 
-  ollama-first-time:
-    summary: Start ollama process the first time
-    cmds:
-      - sudo mkdir -p /opt/ollama/models
-      - sudo chown -R ${USER} /opt/ollama
-
-      # Download models
-      # ollama pull goekdenizguelmez/JOSIEFIED-Qwen3:8b
-      # ollama run goekdenizguelmez/JOSIEFIED-Qwen3:8b
-      # /set parameter num_ctx 16384
-      # /save goekdenizguelmez/JOSIEFIED-Qwen3:8b-16k
-      # ollama run rnj-1:8b
-      # /set parameter num_ctx 32768
-      # /save rnj-1:8b-32k
-      #
-
   ollama:
     summary: Start ollama process
     cmds:
@@ -61,10 +45,15 @@ tasks:
       OLLAMA_HOST: 127.0.0.1:11434
       OLLAMA_KEEP_ALIVE: 1h
       OLLAMA_MAX_LOADED_MODELS: 1
-      OLLAMA_MODELS: /opt/ollama/models
       OLLAMA_NUM_PARALLEL: 1
       OLLAMA_NO_CLOUD: 1
       OLLAMA_FLASH_ATTENTION: 1
+
+      # Download models
+      # ollama pull X
+      # ollama run X
+      # /set parameter num_ctx 16384
+      # /save goekdenizguelmez/JOSIEFIED-Qwen3:8b-16k
 
   docker-bash:
     summary: Exec into the ollama container
